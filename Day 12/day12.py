@@ -1,4 +1,4 @@
-with open("input.txt", 'r') as f:
+with open("testinput.txt", 'r') as f:
     lines = f.read().splitlines()
 
 class Cave:
@@ -33,20 +33,22 @@ def traverse(cave):
     if not cave.isTraversable():
         return []
     if cave.getName() == "end":
-        return [cave]
+        return [[cave]]
     cave.traverse()
+    destinations = cave.getPaths()
     output = []
-    for path in cave.getPaths():
-        output.append([cave] + traverse(path))
+    for destination in destinations:
+        destPath = traverse(destination)
+        for path in destPath:
+            output.append([cave] + path)
     return output
-
 
 def pt1(lines):
     caves = []
     for line in lines:
         startcavename = line.split("-")[0]
         endcavename = line.split("-")[1]
-        startCave = Cave(startcavename)
+        startCave = Cave(startcavename) 
         endCave = Cave(endcavename)
         for cave in caves:
             if startcavename == cave.getName():
@@ -58,9 +60,15 @@ def pt1(lines):
             caves.append(startCave)
         if endCave not in caves:
             caves.append(endCave)
-    return traverse(caves[0])
+        if startCave.getName() == "start":
+            initCave = startCave
+    return(traverse(initCave))
+    
 
 paths = pt1(lines)
 for path in paths:
+    pathName = ""
     for cave in path:
-        print(cave.getName())
+        pathName += cave.getName() + " "
+    print(pathName)
+print(len(paths))
